@@ -8,8 +8,6 @@
 #include "logging.h"
 #include "util.h"
 
-// #define CHECKING
-
 char *argv0;
 int tty_switch = 1;
 
@@ -32,15 +30,6 @@ void cao_version(void)
 {
 	printf("version info\n");
 }
-
-#ifdef CHECKING
-
-int main(void)
-{
-	return cp("justfile", "feinfile");
-}
-
-#else
 
 int main(int argc, char *argv[])
 {
@@ -83,5 +72,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-#endif
