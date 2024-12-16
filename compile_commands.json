@@ -1,0 +1,135 @@
+[
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-std=c11",
+      "-pedantic",
+      "-Wall",
+      "-g",
+      "-O0",
+      "-DDEBUG",
+      "-Isrc",
+      "-c",
+      "-o",
+      "build/logging.o",
+      "src/logging.c"
+    ],
+    "directory": "/home/rose/projects/cao",
+    "file": "/home/rose/projects/cao/src/logging.c",
+    "output": "/home/rose/projects/cao/build/logging.o"
+  },
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-std=c11",
+      "-pedantic",
+      "-Wall",
+      "-g",
+      "-O0",
+      "-DDEBUG",
+      "-Isrc",
+      "-c",
+      "-o",
+      "build/vec.o",
+      "src/vec.c"
+    ],
+    "directory": "/home/rose/projects/cao",
+    "file": "/home/rose/projects/cao/src/vec.c",
+    "output": "/home/rose/projects/cao/build/vec.o"
+  },
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-std=c11",
+      "-pedantic",
+      "-Wall",
+      "-g",
+      "-O0",
+      "-DDEBUG",
+      "-Isrc",
+      "-c",
+      "-o",
+      "build/help.o",
+      "src/help.c"
+    ],
+    "directory": "/home/rose/projects/cao",
+    "file": "/home/rose/projects/cao/src/help.c",
+    "output": "/home/rose/projects/cao/build/help.o"
+  },
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-std=c11",
+      "-pedantic",
+      "-Wall",
+      "-g",
+      "-O0",
+      "-DDEBUG",
+      "-Isrc",
+      "-c",
+      "-o",
+      "build/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/rose/projects/cao",
+    "file": "/home/rose/projects/cao/src/main.c",
+    "output": "/home/rose/projects/cao/build/main.o"
+  },
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-std=c11",
+      "-pedantic",
+      "-Wall",
+      "-g",
+      "-O0",
+      "-DDEBUG",
+      "-Isrc",
+      "-c",
+      "-o",
+      "build/util.o",
+      "src/util.c"
+    ],
+    "directory": "/home/rose/projects/cao",
+    "file": "/home/rose/projects/cao/src/util.c",
+    "output": "/home/rose/projects/cao/build/util.o"
+  },
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-std=c11",
+      "-pedantic",
+      "-Wall",
+      "-g",
+      "-O0",
+      "-DDEBUG",
+      "-Isrc",
+      "-c",
+      "-o",
+      "build/run.o",
+      "src/run.c"
+    ],
+    "directory": "/home/rose/projects/cao",
+    "file": "/home/rose/projects/cao/src/run.c",
+    "output": "/home/rose/projects/cao/build/run.o"
+  },
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-std=c11",
+      "-pedantic",
+      "-Wall",
+      "-g",
+      "-O0",
+      "-DDEBUG",
+      "-Isrc",
+      "-c",
+      "-o",
+      "build/new.o",
+      "src/new.c"
+    ],
+    "directory": "/home/rose/projects/cao",
+    "file": "/home/rose/projects/cao/src/new.c",
+    "output": "/home/rose/projects/cao/build/new.o"
+  }
+]
