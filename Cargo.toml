@@ -1,0 +1,12 @@
+[package]
+name = "cao"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.97"
+content_inspector = "0.2.4"
+directories = "6.0.0"
+lexopt = "0.3.0"
+optparse = "0.1.5"
+walkdir = "2.5.0"
