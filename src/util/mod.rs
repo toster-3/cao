@@ -2,9 +2,11 @@ use std::{
     fs,
     io::{Read, Write},
     path::Path,
+    process::Command,
 };
 
 use anyhow::anyhow;
+use color_print::cprintln;
 use content_inspector::{ContentType, inspect};
 
 pub fn copy_and_replace(
@@ -32,4 +34,20 @@ pub fn copy_and_replace(
     file.write_all(updated.as_bytes())?;
 
     Ok(())
+}
+
+pub trait Show {
+    fn show(&mut self) -> &mut Self;
+}
+
+impl Show for Command {
+    fn show(&mut self) -> &mut Command {
+        let mut s = self.get_program().to_string_lossy().into_owned();
+        for arg in self.get_args() {
+            s.push(' ');
+            s.push_str(&arg.to_string_lossy());
+        }
+        cprintln!("cao: <bold>{s}</>");
+        self
+    }
 }

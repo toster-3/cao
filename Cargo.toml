@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.97"
+color-print = "0.3.7"
 content_inspector = "0.2.4"
 directories = "6.0.0"
 lexopt = "0.3.0"

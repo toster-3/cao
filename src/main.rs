@@ -1,4 +1,4 @@
-use std::{env, path::PathBuf, process};
+use std::{env, ffi::OsString, path::PathBuf, process};
 
 use directories::ProjectDirs;
 
@@ -7,6 +7,7 @@ mod util;
 
 struct GlobalContext {
     cwd: PathBuf,
+    projname: OsString,
     proj_dirs: ProjectDirs,
 }
 
@@ -15,7 +16,11 @@ impl GlobalContext {
         let proj_dirs = directories::ProjectDirs::from("fart", "toster-3", "cao")
             .expect("project dirs kant be found ??? try using a sane os.");
 
-        GlobalContext { cwd, proj_dirs }
+        GlobalContext {
+            cwd,
+            proj_dirs,
+            projname: "project".into(),
+        }
     }
 
     fn update_cwd(&mut self) -> anyhow::Result<()> {
@@ -29,16 +34,19 @@ impl GlobalContext {
 fn main() -> anyhow::Result<()> {
     use lexopt::prelude::*;
 
+    let mut args_exist = false;
     let cwd = std::env::current_dir()?;
     let mut ctx = GlobalContext::new(cwd);
 
     let mut parser = lexopt::Parser::from_env();
     while let Some(arg) = parser.next()? {
+        args_exist = true;
         match arg {
             Short('V') | Long("version") => {
                 commands::version::exec(&mut ctx, &mut parser)?;
                 process::exit(0);
             }
+            Short('h') | Long("help") => commands::help::exec(&mut ctx, &mut parser)?,
             Short('C') | Long("directory") => {
                 env::set_current_dir(parser.value()?)?;
                 ctx.update_cwd()?;
@@ -51,6 +59,9 @@ fn main() -> anyhow::Result<()> {
             }
             _ => {}
         }
+    }
+    if !args_exist {
+        commands::help::exec(&mut ctx, &mut parser)?
     }
 
     Ok(())
