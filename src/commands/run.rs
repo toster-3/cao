@@ -27,9 +27,7 @@ pub fn exec(ctx: &mut GlobalContext, parser: &mut lexopt::Parser) -> CmdResult {
         .ok_or_else(|| anyhow!("it broke ig"))?
         .into();
     let proj_exe = &ctx.cwd.join("build").join(&ctx.projname);
-    if !proj_exe.exists() {
-        build::do_build(ctx, b)?;
-    }
+    build::do_build(ctx, b)?;
 
     Command::new(proj_exe)
         .args(
