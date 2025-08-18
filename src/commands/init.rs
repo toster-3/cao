@@ -22,7 +22,6 @@ pub fn exec(ctx: &mut GlobalContext, parser: &mut lexopt::Parser) -> CmdResult {
         }
     }
 
-    template = dbg!(template);
     if template.as_os_str().is_empty() {
         return Err(anyhow!("cannot use empty template"));
     }
@@ -43,7 +42,7 @@ pub fn exec(ctx: &mut GlobalContext, parser: &mut lexopt::Parser) -> CmdResult {
         return Err(anyhow!("template '{}' does not exist", dir.display()));
     }
 
-    let proj = dbg!(env::current_dir())?;
+    let proj = env::current_dir()?;
     if proj.read_dir()?.next().is_some() {
         return Err(anyhow!("project directory isnt empty"));
     }

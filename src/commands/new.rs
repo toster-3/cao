@@ -8,6 +8,8 @@ use crate::util;
 use anyhow::anyhow;
 use walkdir::WalkDir;
 
+// cao get
+
 pub fn exec(ctx: &mut GlobalContext, parser: &mut lexopt::Parser) -> CmdResult {
     use lexopt::prelude::*;
 
@@ -32,7 +34,6 @@ pub fn exec(ctx: &mut GlobalContext, parser: &mut lexopt::Parser) -> CmdResult {
     }
 
     let projname = projmaybe.ok_or(anyhow!("project name not set"))?;
-    template = dbg!(template);
     if template.as_os_str().is_empty() {
         return Err(anyhow!("cannot use empty template"));
     }
@@ -53,7 +54,7 @@ pub fn exec(ctx: &mut GlobalContext, parser: &mut lexopt::Parser) -> CmdResult {
         return Err(anyhow!("template '{}' does not exist", dir.display()));
     }
 
-    let proj = dbg!(PathBuf::from(projname));
+    let proj = PathBuf::from(projname);
     if proj.exists() && proj.read_dir()?.next().is_some() {
         return Err(anyhow!("project directory isnt empty"));
     }

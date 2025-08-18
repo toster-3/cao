@@ -5,10 +5,10 @@ use directories::ProjectDirs;
 mod commands;
 mod util;
 
-struct GlobalContext {
-    cwd: PathBuf,
-    projname: OsString,
-    proj_dirs: ProjectDirs,
+pub struct GlobalContext {
+    pub cwd: PathBuf,
+    pub projname: OsString,
+    pub proj_dirs: ProjectDirs,
 }
 
 impl GlobalContext {

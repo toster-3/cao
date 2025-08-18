@@ -4,7 +4,6 @@ use std::process::Command;
 use std::{env, fs};
 
 use anyhow::anyhow;
-use color_print::cprintln;
 
 use crate::GlobalContext;
 use crate::commands::CmdResult;
