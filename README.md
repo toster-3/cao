@@ -1,3 +1,0 @@
-# cao
-
-simple project manager

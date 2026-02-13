@@ -1,0 +1,17 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+ColumnLimit: 0
+UseTab: ForIndentation
+BreakBeforeBraces: Custom
+AllowShortLoopsOnASingleLine: true
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: Inline
+SkipMacroDefinitionBody: true
+ForEachMacros: [ll_foreach, arr_foreach, LONG_ARGBEGIN, ELONG_ARGBEGIN]
+BraceWrapping:
+  AfterFunction: true
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterClass: false
