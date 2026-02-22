@@ -319,7 +319,7 @@ forced:
 	for (DirEnt *node = files; node; node = node->next) {
 		if (node->is_dir) {
 			if (mkdir(str_null_terminate(node->bname, perm).v, 0755) != -1) {
-				fprintf(stderr, "%s: created directory '%.*s'\n", argv0, (int)node->bname.len, node->bname.v);
+				fprintf(stderr, "%s: created dir  '%.*s'\n", argv0, (int)node->bname.len, node->bname.v);
 			} else {
 				fprintf(stderr, "%s: mkdir: %s\n", argv0, strerror(errno));
 			}
