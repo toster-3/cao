@@ -205,13 +205,19 @@ Usize fputstr(Str s, FILE *fp)
 }
 
 #define STR_FMT(s) (int)(s).len, s.v
-bool copy_over_and_subst(Str dest, Str src, Str substitution, Arena scratch)
+bool copy_over_and_subst(Str dest, Str src, Str substitution, int *mode, Arena scratch)
 {
+	struct stat statres;
 	FILE *in = fopen(str_null_terminate(src, &scratch).v, "rb");
 	if (!in) {
 		fprintf(stderr, "%s: fopen '%.*s': %s\n", argv0, (int)src.len, src.v, strerror(errno));
 		return false;
 	}
+	if (fstat(fileno(in), &statres)) {
+		fprintf(stderr, "%s: fstat '%.*s': %s\n", argv0, (int)src.len, src.v, strerror(errno));
+		return false;
+	}
+	*mode = statres.st_mode & 07777;
 	FILE *out = fopen(str_null_terminate(dest, &scratch).v, "wb");
 	if (!out) {
 		fclose(in);
@@ -227,6 +233,12 @@ bool copy_over_and_subst(Str dest, Str src, Str substitution, Arena scratch)
 			fputc(*s.v, out);
 			s = str_skip(s, 1);
 		}
+	}
+	if (fchmod(fileno(out), statres.st_mode) == -1) {
+		fprintf(stderr, "%s: fchmod '%.*s': %s\n", argv0, (int)dest.len, dest.v, strerror(errno));
+		fclose(in);
+		fclose(out);
+		return false;
 	}
 	fclose(in);
 	fclose(out);
@@ -303,6 +315,7 @@ forced:
 
 	DirEnt *files = all_files(template, 0, S("."), perm);
 	Str subst = path_basename(str_cwd(perm));
+	int mode;
 	for (DirEnt *node = files; node; node = node->next) {
 		if (node->is_dir) {
 			if (mkdir(str_null_terminate(node->bname, perm).v, 0755) != -1) {
@@ -311,8 +324,8 @@ forced:
 				fprintf(stderr, "%s: mkdir: %s\n", argv0, strerror(errno));
 			}
 		} else {
-			if (copy_over_and_subst(node->bname, node->fname, subst, scratch)) {
-				fprintf(stderr, "%s: created file '%.*s'\n", argv0, (int)node->bname.len, node->bname.v);
+			if (copy_over_and_subst(node->bname, node->fname, subst, &mode, scratch)) {
+				fprintf(stderr, "%s: created file '%.*s' with mode %04o\n", argv0, (int)node->bname.len, node->bname.v, mode);
 			}
 		}
 	}
