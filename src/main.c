@@ -287,7 +287,7 @@ int cmd_new(char **argv, Arena *perm, Arena scratch)
 	}
 	Str home = str_copy_cstr(getenv("HOME"), perm);
 	if (!home.v) {
-		fprintf(stderr, "%s: HOME environment variable not set.\n", argv0);
+		fprintf(stderr, "%s: HOME environment variable not set\n", argv0);
 		return 1;
 	}
 	Str template = path_concat(home, S(".config/cao/templates"), perm);
@@ -301,7 +301,7 @@ int cmd_new(char **argv, Arena *perm, Arena scratch)
 		if (errno == EEXIST) {
 			if (force)
 				goto forced;
-			fprintf(stderr, "%s: Directory '%s' already exists, use -f to create project anyway.\n", argv0, argv[2]);
+			fprintf(stderr, "%s: directory '%s' already exists, use -f to create project anyway\n", argv0, argv[2]);
 		} else {
 			fprintf(stderr, "%s: mkdir: %s\n", argv0, strerror(errno));
 		}
