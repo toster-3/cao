@@ -21,31 +21,13 @@
 #define OPTPARSE_IMPLEMENTATION
 #include "optparse.h"
 
-#define assert(x) do { if (!(x)) __builtin_trap(); } while(0)
-
 char *argv0;
+#define STR_FMT(s) (int)(s).len, s.v
 
 bool eq(char *s1, char *s2)
 {
 	return !strcmp(s1, s2);
 }
-
-typedef struct StrNode StrNode;
-struct StrNode {
-	Str s;
-	StrNode *next;
-};
-
-typedef struct {
-	StrNode *first;
-	StrNode *last;
-	Size len;
-	Size total_size;
-} StrList;
-
-typedef struct {
-	Arena perm, scratch;
-} Context;
 
 bool file_exists(char *fname)
 {
@@ -114,8 +96,7 @@ int os_command(char **argv, Arena scratch, char *argv0)
 		cmd = str_concat(cmd, STR(*arg), &scratch);
 	}
 	cmd.v[0] = '>';
-	cmd = str_concat(cmd, S("\n"), &scratch);
-	fwrite(cmd.v, sizeof(*cmd.v), cmd.len, stdout);
+	printf("%.*s\n", (int)cmd.len, cmd.v);
 	switch ((child_pid = fork())) {
 	case -1:
 		perror("fork");
@@ -194,6 +175,32 @@ DirEnt *all_files(Str dir, DirEnt *last, Str cwd, Arena *perm)
 	return node;
 }
 
+DirEnt *top_level_files(Str dir, Arena *perm)
+{
+	DirEnt *node = 0;
+	DIR *dr;
+	struct dirent *de;
+	dr = opendir(str_null_terminate(dir, perm).v);
+	if (!dr) {
+		fprintf(stderr, "%s: opendir '%.*s': %s\n", argv0, (int)dir.len, dir.v, strerror(errno));
+		exit(1);
+	}
+	while ((de = readdir(dr))) {
+		DirEnt *nnode;
+		if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")) {
+			continue;
+		}
+		nnode = new(DirEnt, perm);
+		nnode->is_dir = de->d_type == DT_DIR;
+		nnode->next = node;
+		nnode->bname = str_copy_cstr(de->d_name, perm);
+		nnode->fname = path_concat(dir, nnode->bname, perm);
+		node = nnode;
+	}
+	closedir(dr);
+	return node;
+}
+
 bool str_has_prefix(Str s, Str pref)
 {
 	return str_eq(prefix(s, pref.len), pref);
@@ -204,7 +211,6 @@ Usize fputstr(Str s, FILE *fp)
 	return fwrite(s.v, sizeof *s.v, s.len, fp);
 }
 
-#define STR_FMT(s) (int)(s).len, s.v
 bool copy_over_and_subst(Str dest, Str src, Str substitution, int *mode, Arena scratch)
 {
 	struct stat statres;
@@ -256,15 +262,18 @@ Str str_cwd(Arena *perm)
 	}
 	return STR(s);
 }
+int cmd_help(char **argv, Arena *perm, Arena scratch);
 
 // cao new <template> <project>
 int cmd_new(char **argv, Arena *perm, Arena scratch)
 {
 	struct optparse_long longopts[] = {
 	    {"force", 'f', OPTPARSE_NONE},
-	    {"help", 'h', OPTPARSE_NONE}};
+	    {"help", 'h', OPTPARSE_NONE},
+	    {"list", 'l', OPTPARSE_NONE},
+	    {0}};
 	int option;
-	bool force = false;
+	bool force = false, list = false;
 	struct optparse options;
 	optparse_init(&options, argv);
 
@@ -274,14 +283,17 @@ int cmd_new(char **argv, Arena *perm, Arena scratch)
 			force = true;
 			break;
 		case 'h':
-			return 123123;
+			return cmd_help((char *[]){"help", "new", 0}, perm, scratch);
+		case 'l':
+			list = true;
+			break;
 		case '?':
-			fprintf(stderr, "%s: %s\nusage: %s new <template> <project>", argv[0], options.errmsg, argv0);
+			fprintf(stderr, "%s: %s\nusage: %s new <template> <project>\n", argv[0], options.errmsg, argv0);
 			return 1;
 		}
 	}
 
-	if (!argv[1] || !argv[2]) {
+	if ((!argv[1] || !argv[2]) && !list) {
 		fprintf(stderr, "%s: not enough arguments\nUsage: %s new <template> <project>\n", argv0, argv0);
 		return 1;
 	}
@@ -291,6 +303,14 @@ int cmd_new(char **argv, Arena *perm, Arena scratch)
 		return 1;
 	}
 	Str template = path_concat(home, S(".config/cao/templates"), perm);
+	if (list) {
+		DirEnt *node = top_level_files(template, perm);
+		for (; node; node = node->next) {
+			printf("%.*s\n", STR_FMT(node->bname));
+		}
+		return 0;
+	}
+
 	template = path_concat(template, STR(argv[1]), perm);
 	char *ntermed = str_null_terminate(template, perm).v;
 	if (!file_exists(ntermed)) {
@@ -396,7 +416,8 @@ int cmd_help(char **argv, Arena *perm, Arena scratch)
 	     "creates a new directory called <project> and copies the contents of the template <template>\n"
 	     "which is located at ~/.config/cao.\n\n"
 	     "Options:\n"
-	     "  -f, --force : create project even if <project> is non-empty\n"}};
+	     "  -f, --force : create project even if <project> is non-empty\n"
+	     "  -l, --list  : list available templates\n"}};
 	int i, nmsgs = sizeof(help_msgs) / sizeof(*help_msgs);
 	(void)perm;
 	(void)scratch;
